@@ -1,5 +1,5 @@
 from flask import Flask, render_template, flash, redirect, url_for
-from forms import RegisterForm
+from forms import RegisterForm,LoginForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '33c2660bb961efaa484a3ed88f478705'
@@ -28,11 +28,11 @@ posts = [
 
 @app.route("/")
 def home():
-    return render_template("home.html", posts=posts, title="Home Page")
+    return render_template("main/home.html", posts=posts, title="Home Page")
 
 @app.route("/about")
 def about():
-    return render_template("about.html", title="About")
+    return render_template("main/about.html", title="About")
 
 
 
@@ -43,8 +43,25 @@ def register():
         # Handle registration logic here
         flash(f'{form.username.data} Register successful!', 'success')
         return redirect(url_for('home'))
-    return render_template("register.html", title="Register", form=form)
+    return render_template("users/register.html", title="Register", form=form)
+
+user = { "email": "admin@gmail.com", "password":"123456"}
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.email.data == user['email'] and form.password.data == user['password']:
+            flash("You have been logged in successfully","success")
+            # Handle login logic here
+            return redirect(url_for('home'))
+        else:
+            flash("Invalid email or password","danger")
+
+    return render_template("users/login.html", title="Login", form=form)
 
 
 if __name__ == "__main__":  
     app.run(debug=True)
+
+
