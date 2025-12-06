@@ -10,6 +10,11 @@ class User(db.Model):
 
     posts = db.relationship('Post', backref='author', lazy=True)
 
+    def __init__(self, username, email ,pasword) -> None:
+        self.username = username
+        self.email = email
+        self.password = pasword
+
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 

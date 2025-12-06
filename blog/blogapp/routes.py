@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, flash
-from blogapp import app
-from blogapp.models import Post
+from blogapp import app, db, bcrypt
+from blogapp.models import Post,User
 from blogapp.forms import RegisterForm, LoginForm
 
 
@@ -22,8 +22,14 @@ def about():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        flash(f'{form.username.data} registered successfully!', 'success')
-        return redirect(url_for('home'))
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data , pasword=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+
+        flash('registered successfully! , Please log in to your account', 'success')
+        return redirect(url_for('login'))
+    
     return render_template("users/register.html", title="Register", form=form)
 
 
