@@ -1,8 +1,8 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash,request
 from blogapp import app, db, bcrypt
 from blogapp.models import Post,User
 from blogapp.forms import RegisterForm, LoginForm
-from flask_login import login_user,logout_user,current_user
+from flask_login import login_user,logout_user,current_user, login_required
 
 
 
@@ -48,7 +48,11 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user=user, remember=form.remember.data)
-            return redirect(url_for('home'))
+            next_page = request.args.get('next')
+            # if next_page:
+            #     return redirect(next_page)
+            #  return redirect(url_for('home'))
+            return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash("Invalid email or password", "danger")
 
@@ -59,3 +63,13 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+@app.route("/profile")
+@login_required
+def profile():
+    # if not current_user.is_authenticated:
+    #     return redirect(url_for('login'))
+
+
+     
+    return render_template("users/profile.html", title="Profile")
