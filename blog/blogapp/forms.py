@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from blogapp.models import User
+from flask_login import current_user
 
 # Define a registration (Sign Up) form using Flask-WTF انشاء حساب مستخدم جديد
 class RegisterForm(FlaskForm):
@@ -29,3 +30,21 @@ class LoginForm(FlaskForm):
     remember = BooleanField(label="Remember me")
     submit = SubmitField(label='Sign In') # 
 
+
+class UpdateProfileForm(FlaskForm):
+    username = StringField(label='Username', validators=[DataRequired(), Length(min=2, max=80)])
+    email = StringField(label='Email', validators=[DataRequired(), Email()])
+    submit = SubmitField(label='Update')
+
+    
+    def validate_username(self, username):
+        if username.data != current_user.username:
+            user = User.query.filter_by(username=username.data).first()
+            if user:
+                raise ValidationError('username already exist')
+        
+    def validate_email(self, email):
+        if email.data != current_user.email: 
+            user = User.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError('email already exist')

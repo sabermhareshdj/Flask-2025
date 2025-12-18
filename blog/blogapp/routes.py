@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash,request
 from blogapp import app, db, bcrypt
 from blogapp.models import Post,User
-from blogapp.forms import RegisterForm, LoginForm
+from blogapp.forms import RegisterForm, LoginForm, UpdateProfileForm
 from flask_login import login_user,logout_user,current_user, login_required
 
 
@@ -64,12 +64,21 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route("/profile")
+@app.route("/profile", methods=['GET','POST'])
 @login_required
 def profile():
     # if not current_user.is_authenticated:
     #     return redirect(url_for('login'))
 
+    form = UpdateProfileForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash("your info has been updated", "success")
+        return redirect(url_for('profile'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
 
-     
-    return render_template("users/profile.html", title="Profile")
+    return render_template("users/profile.html", title="Profile", form=form)
