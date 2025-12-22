@@ -3,6 +3,8 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Valid
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from blogapp.models import User
 from flask_login import current_user
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 
 # Define a registration (Sign Up) form using Flask-WTF انشاء حساب مستخدم جديد
 class RegisterForm(FlaskForm):
@@ -34,6 +36,7 @@ class LoginForm(FlaskForm):
 class UpdateProfileForm(FlaskForm):
     username = StringField(label='Username', validators=[DataRequired(), Length(min=2, max=80)])
     email = StringField(label='Email', validators=[DataRequired(), Email()])
+    profile_picture = FileField(label="Update Profole Picture", validators=[FileAllowed(['png','jpg'], message="only png and jpg files are allowed")])
     submit = SubmitField(label='Update')
 
     

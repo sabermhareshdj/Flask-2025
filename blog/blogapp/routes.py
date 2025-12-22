@@ -1,3 +1,6 @@
+import secrets
+import os
+from PIL import Image
 from flask import render_template, redirect, url_for, flash,request
 from blogapp import app, db, bcrypt
 from blogapp.models import Post,User
@@ -72,6 +75,22 @@ def profile():
 
     form = UpdateProfileForm()
     if form.validate_on_submit():
+        if form.profile_picture.data:
+            random_token = secrets.token_hex(8)
+            picture_file_name = random_token + form.profile_picture.data.filename
+            picture_path = os.path.join(app.root_path, 'static/images', picture_file_name)
+
+            image = Image.open(form.profile_picture.data)
+            image.thumbnail((150,150))
+
+            image.save(picture_path)
+
+            if current_user.image_url:
+                os.remove(os.path.join(app.root_path, 'static/images', current_user.image_url))
+               
+
+            current_user.image_url = picture_file_name
+
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
