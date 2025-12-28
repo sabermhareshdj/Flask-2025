@@ -4,14 +4,14 @@ from PIL import Image
 from flask import render_template, redirect, url_for, flash,request
 from blogapp import app, db, bcrypt
 from blogapp.models import Post,User
-from blogapp.forms import RegisterForm, LoginForm, UpdateProfileForm
+from blogapp.forms import RegisterForm, LoginForm, UpdateProfileForm ,CreatePostForm
 from flask_login import login_user,logout_user,current_user, login_required
 
 
 
 @app.route("/")
 def home():
-    posts = Post.query.all()
+    posts = Post.query.order_by(Post.created_at.desc()).all()
     # print(posts[0])
     # print(posts[1])
     return render_template("main/home.html", posts=posts, title="Home Page")
@@ -101,3 +101,16 @@ def profile():
         form.email.data = current_user.email
 
     return render_template("users/profile.html", title="Profile", form=form)
+
+
+@app.route("/post/create", methods=['GET','POST'])
+@login_required
+def create_new_post():
+    form = CreatePostForm()
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, description=form.descripton.data, user_id=current_user.id)
+        db.session.add(post)
+        db.session.commit()
+        flash("Post has been created successfully", "success")
+        return redirect(url_for('home'))
+    return render_template("posts/create_post.html", title="Create Post", form=form)

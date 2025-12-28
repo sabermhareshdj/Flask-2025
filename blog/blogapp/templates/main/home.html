@@ -2,10 +2,39 @@
 
 {% block content %}
     {% for post in posts %}
-    <div class="mb-5">
-      <h2 class="text-primary">{{ post.title }}</h2>
-      <p>by {{ post.author.username }} on {{ post.created_at.strftime('%Y-%m-%d') }}</p>
-      <p>{{ post.description }}</p>
-    </div>
+      <div class="mb-5 bg-white p-3 rounded">
+         <div class="d-flex align-items-center">
+              <div>
+                  {% if post.author.image_url %}
+                  <img 
+                    src="{{ url_for('static', filename='images/' + post.author.image_url) }}" 
+                    alt="{{post.author.username}}"
+                    class="rounded-circle"
+                    height="80px"
+                    width="80px"
+                    >
+                  {% else %}
+                  <img 
+                        src="{{ url_for('static', filename='images/user-avatar.png') }}" 
+                        alt="{{current_user.username}}"
+                        class="rounded-circle"
+                        height="80px"
+                        width="80px"
+                        >
+                  {% endif %}
+
+            </div>
+
+            <div class="text_secondary ms-3">
+                <p><b>BY: <span class="text-dark">{{ post.author.username }}</span></b><b> ON:<b>{{post.created_at.strftime('%Y-%m-%d')}}</p>
+            </div>
+          </div>
+          <div class="ms-3 mt-2">
+              <h2 class="text-primary mb-1">{{ post.title }}</h2>
+              <p>{{ post.description }}</p>
+
+          </div>
+      </div>
+
     {% endfor %}
 {% endblock content %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+
+    <form method="POST" action="" class="border p-3 rounded shadow" novalidate>
+
+        <!-- # prevent CSRF attacks حماية من هجمات تزوير الطلبات عبر المواقع -->
+        <!-- CSRF = Cross-Site Request Forgery -->
+        {{ form.hidden_tag() }}
+         <!-- # or {{ form.csrf_token}} الافضل في فلاسك الاعلى  -->
+
+        <h1 class="text-secondary text-center">Create New Post</h1>
+
+        <div class="mb-2">
+            {{ form.title.label(class="form-label ms-1 fw-bold") }}
+
+            {% if form.title.errors %}
+            {{ form.title(class="form-control form-control-lg is-invalid", placeholder="Enter your title") }}
+            <div class="invalid-feedback">
+                {% for error in form.title.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.title(class="form-control form-control-lg", placeholder="Enter your title") }}
+            {% endif %}
+
+        </div>
+        <div class="mb-2">
+            {{ form.descripton
+              .label(class="form-label ms-1 fw-bold") }}
+
+            {% if form.descripton.errors %}
+            {{ form.descripton(class="form-control form-control-lg is-invalid", placeholder="Enter your description") }}
+            <div class="invalid-feedback">
+                {% for error in form.descripton.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.descripton(class="form-control form-control-lg", placeholder="Enter your description") }}
+
+            {% endif %}
+        </div>
+         
+        <div class="mt-3">
+            {{ form.submit(class="btn btn-lg btn-outline-secondary") }}
+        </div>
+     
+    </form>
+    </div>
+    {% endblock %}
