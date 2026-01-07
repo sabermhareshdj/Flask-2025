@@ -1,41 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% for post in posts %}
-      <div class="mb-5 bg-white p-3 rounded">
-         <div class="d-flex align-items-center">
-              <div>
-                  {% if post.author.image_url %}
-                  <img 
-                    src="{{ url_for('static', filename='images/' + post.author.image_url) }}" 
-                    alt="{{post.author.username}}"
-                    class="rounded-circle"
-                    height="80px"
-                    width="80px"
-                    >
-                  {% else %}
-                  <img 
-                        src="{{ url_for('static', filename='images/user-avatar.png') }}" 
-                        alt="{{current_user.username}}"
-                        class="rounded-circle"
-                        height="80px"
-                        width="80px"
-                        >
-                  {% endif %}
+  {% for post in posts.items %}
 
-            </div>
+    <div class="mb-5 bg-white p-3 rounded">
 
-            <div class="text_secondary ms-3">
-                <p><b>BY: <span class="text-dark">{{ post.author.username }}</span></b><b> ON:<b>{{post.created_at.strftime('%Y-%m-%d')}}</p>
-            </div>
-          </div>
-          <div class="ms-3 mt-2">
-              <h2 class="text-primary mb-1">{{ post.title }}</h2>
-              <p class="pline"> {{ post.description }} </p>
+      <div class="d-flex align-items-center">
 
-          </div>
-          <a href="{{ url_for('single_post', post_id=post.id) }}" class="btn btn-outline-primary mt-2">Read More</a>
+        <div>
+          {% if post.author.image_url %}
+            <img 
+              src="{{ url_for('static', filename='images/' + post.author.image_url) }}"
+              alt="{{ post.author.username }}"
+              class="rounded-circle"
+              height="80"
+              width="80">
+          {% else %}
+            <img 
+              src="{{ url_for('static', filename='images/user-avatar.png') }}"
+              alt="{{ post.author.username }}"
+              class="rounded-circle"
+              height="80"
+              width="80">
+          {% endif %}
+        </div>
+
+        <div class="text_secondary ms-3">
+          <p>
+            <strong>BY:</strong>
+            <a href="{{ url_for('get_user_posts', username=post.author.username) }}" class="text-info fw-bold">
+              {{ post.author.username }}
+            </a>
+
+            <strong> ON: </strong>
+            {{ post.created_at.strftime('%Y-%m-%d') }}
+          </p>
+        </div>
+
       </div>
 
-    {% endfor %}
+      <div class="ms-3 mt-2">
+        <h2 class="text-primary mb-1">{{ post.title }}</h2>
+        <p class="pline">{{ post.description }}</p>
+        <a href="{{ url_for('single_post', post_id=post.id) }}" class="btn btn-outline-primary mt-2">
+          Read More
+        </a>
+      </div>
+
+    </div>
+
+  {% endfor %}
+
+  <!-- pagination -->
+  {% for page_number in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_number %}
+      {% if posts.page == page_number %}
+        <a href="{{ url_for('home', page=page_number) }}" class="btn btn-secondary">{{ page_number }}</a>
+      {% else %}
+        <a href="{{ url_for('home', page=page_number) }}" class="btn btn-outline-secondary">{{ page_number }}</a>
+      {% endif %}
+    {% else %}
+      <span class="btn btn-outline-secondary disabled">...</span>
+    {% endif %}
+  {% endfor %}
+
 {% endblock content %}

@@ -11,10 +11,21 @@ from flask_login import login_user,logout_user,current_user, login_required
 
 @app.route("/")
 def home():
-    posts = Post.query.order_by(Post.created_at.desc()).all()
+    page = request.args.get('page', default=1, type=int)
+    posts = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=2)
+    print(f"page number : {page}")
     # print(posts[0])
     # print(posts[1])
     return render_template("main/home.html", posts=posts, title="Home Page")
+
+
+
+@app.route("/posts/user/<string:username>")
+def get_user_posts(username):
+    page = request.args.get('page', default=1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = Post.query.filter_by(author=user).order_by(Post.created_at.desc()).paginate(page=page, per_page=2)
+    return render_template("main/user_posts.html", posts=posts, user=user)
 
 
 @app.route("/about")
